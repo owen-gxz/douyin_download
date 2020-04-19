@@ -3,8 +3,9 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/owen-gxz/douyin_download"
 	"os"
+
+	"github.com/owen-gxz/douyin_download"
 )
 
 func main() {
@@ -23,5 +24,4 @@ func main() {
 		fmt.Println("视频动图地址为:", info.GetDynamicCoverUrl())
 		fmt.Println("视频静图地址为:", info.GetOriginCoverUrl())
 	}
-
 }
