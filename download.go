@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"strings"
 )
 
 var (
@@ -33,10 +34,10 @@ func GetDouyinInfo(uri string) *DouyinInfo {
 		return nil
 	}
 	vid := vidkRe.FindStringSubmatch(locaUrl)[1]
-	mid := midkRe.FindStringSubmatch(locaUrl)[1]
-	u_code := uCodeRe.FindStringSubmatch(locaUrl)[1]
-	dytk := getDytk(vid, mid, u_code)
-	infoUrl := fmt.Sprintf("%s?item_ids=%s&dytk=%s", inforUrl, vid, dytk)
+	//mid := midkRe.FindStringSubmatch(locaUrl)[1]
+	//u_code := uCodeRe.FindStringSubmatch(locaUrl)[1]
+	//dytk := getDytk(vid, mid, u_code)
+	infoUrl := fmt.Sprintf("%s?item_ids=%s", inforUrl, vid)
 	return getInfo(infoUrl)
 }
 
@@ -50,8 +51,12 @@ func getInfo(uri string) *DouyinInfo {
 	if err != nil {
 		return nil
 	}
+	data,err:=ioutil.ReadAll(result.Body)
+	if err != nil {
+		return nil
+	}
 	resp := &DouyinInfo{}
-	err = json.NewDecoder(result.Body).Decode(resp)
+	err = json.Unmarshal(data,resp)
 	if err != nil {
 		return nil
 	}
@@ -88,7 +93,8 @@ func (info DouyinInfo) GetOriginalVideoUrl() string {
 	if len(info.ItemList[0].Video.PlayAddr.URLList) < 1 {
 		return ""
 	}
-	return info.ItemList[0].Video.PlayAddr.URLList[0]
+	nurl:=strings.Replace(info.ItemList[0].Video.PlayAddr.URLList[0],"playwm","play",1)
+	return  nurl
 }
 
 //原始视频
@@ -188,6 +194,7 @@ func getDytk(vid, mid, u_code string) string {
 	if err != nil {
 		return ""
 	}
+	fmt.Println(string(data))
 	return dytkRe.FindStringSubmatch(string(data))[1]
 }
 
